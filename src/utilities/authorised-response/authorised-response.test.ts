@@ -18,7 +18,7 @@ describe('authorisedResponse', () => {
         'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify({
-        flag: 'caley',
+        flag: 'member',
         event,
         context,
       }),
