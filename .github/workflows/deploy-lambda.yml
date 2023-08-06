@@ -1,0 +1,44 @@
+name: Build and deploy lambda
+on:
+  push:
+    branches:
+      - main
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: "eu-west-2"
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install
+        id: install
+        run: make npm/install
+        continue-on-error: false
+
+      - name: lint
+        id: lint
+        run: make lint/application
+        continue-on-error: false
+
+      - name: test
+        id: test
+        run: make test/application
+        continue-on-error: false
+
+      - name: bundle
+        id: bundle
+        run: make bundle/application
+        continue-on-error: false
+
+      - name: zip
+        id: zip
+        run: make zip/lambda
+        continue-on-error: false
+
+      - name: lambda
+        id: lambda
+        run: make aws/lambda/update/actions
+        continue-on-error: false
