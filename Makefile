@@ -18,13 +18,13 @@ aws/lambda/update/actions:
 	@zip_file_path="${GITHUB_WORKSPACE}/dist/bundle.zip"; \
 	aws lambda update-function-code \
 		--region eu-west-2 \
-		--function-name easy-form-email-handler \
+		--function-name easy_form_members_function \
 		--zip-file "fileb://$${zip_file_path}"
 
 aws/lambda/update/local:
 	@zip_file_path="./dist/bundle.zip"; \
 	aws lambda update-function-code \
 		--region eu-west-2 \
-		--function-name easy-form-email-handler \
+		--function-name easy_form_members_function \
 		--zip-file "fileb://$${zip_file_path}"
 
