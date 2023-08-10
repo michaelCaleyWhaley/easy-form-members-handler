@@ -21,7 +21,7 @@ async function createMember({
     },
     UpdateExpression: 'SET requestCount = if_not_exists(destination, :start)',
     ExpressionAttributeValues: {
-      ':start': { N: userEmail },
+      ':start': { S: userEmail },
     },
     ReturnValues: 'ALL_NEW',
   });

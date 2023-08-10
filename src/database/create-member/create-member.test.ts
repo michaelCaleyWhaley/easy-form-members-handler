@@ -44,7 +44,7 @@ describe('createMember', () => {
       },
       UpdateExpression: 'SET requestCount = if_not_exists(destination, :start)',
       ExpressionAttributeValues: {
-        ':start': { N: 'fakeemail' },
+        ':start': { S: 'fakeemail' },
       },
       ReturnValues: 'ALL_NEW',
     });
