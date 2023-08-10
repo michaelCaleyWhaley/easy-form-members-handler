@@ -2,15 +2,16 @@ import { DynamoDBClient, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 
 import { AWS_REGION, TABLE_NAME } from '../../constants/aws';
 
-type UpdateRequestCountArgs = { metadataAccessKey: string };
-type UpdateRequestCountReturn = {
+type CreateMemberCountArgs = { metadataAccessKey: string; userEmail: string };
+type CreateMemberCountReturn = {
   requestCount: number;
   registeredDestination: string;
 };
 
-async function updateRequestCount({
+async function createMember({
   metadataAccessKey,
-}: UpdateRequestCountArgs): Promise<UpdateRequestCountReturn> {
+  userEmail,
+}: CreateMemberCountArgs): Promise<CreateMemberCountReturn> {
   const client = new DynamoDBClient({ region: AWS_REGION });
 
   const command = new UpdateItemCommand({
@@ -18,11 +19,9 @@ async function updateRequestCount({
     Key: {
       accessKey: { S: metadataAccessKey },
     },
-    UpdateExpression:
-      'SET requestCount = if_not_exists(requestCount, :start) + :incrementValue',
+    UpdateExpression: 'SET requestCount = if_not_exists(destination, :start)',
     ExpressionAttributeValues: {
-      ':incrementValue': { N: '1' },
-      ':start': { N: '0' },
+      ':start': { N: userEmail },
     },
     ReturnValues: 'ALL_NEW',
   });
@@ -41,4 +40,4 @@ async function updateRequestCount({
   }
 }
 
-export { updateRequestCount };
+export { createMember };

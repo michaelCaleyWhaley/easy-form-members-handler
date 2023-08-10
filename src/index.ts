@@ -8,12 +8,13 @@ export type QueryStringParameters = { [key: string]: string };
 export type HandlerEvent = {
   path: string;
   queryStringParameters?: QueryStringParameters;
-  requestContext?: { authorizer: { claims: { sub: string } } };
+  requestContext?: { authorizer: { claims: { sub: string; email: string } } };
 };
 export type HandlerContext = unknown;
 type Controllers = {
   [key: string]: (args: {
     uuid?: string;
+    userEmail?: string;
     queryStringParameters?: QueryStringParameters;
   }) => Promise<SuccessReturn | ErrorReturn>;
 };
@@ -22,14 +23,14 @@ const controllers: Controllers = { '/members': member };
 
 export const handler = async (
   event: HandlerEvent,
-  context: HandlerContext,
 ): Promise<{
   statusCode: number;
   headers: { [key: string]: string };
   body: unknown;
 }> => {
   const { path, queryStringParameters, requestContext } = event;
-  const uuid = requestContext?.authorizer?.claims?.sub;
+  const { sub: uuid, email: userEmail } =
+    requestContext?.authorizer?.claims || {};
 
   if (!controllers[path])
     return unauthorisedResponse({
@@ -37,7 +38,8 @@ export const handler = async (
     });
 
   const controllerResponse = await controllers[path]({
-    uuid: uuid || null,
+    uuid,
+    userEmail,
     queryStringParameters,
   });
 
@@ -45,5 +47,9 @@ export const handler = async (
     return unauthorisedResponse(controllerResponse);
   }
 
-  return authorisedResponse({ event, context });
+  const {
+    success: { body },
+  } = controllerResponse as SuccessReturn;
+
+  return authorisedResponse({ body });
 };

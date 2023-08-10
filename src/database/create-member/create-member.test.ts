@@ -1,7 +1,7 @@
 import { DynamoDBClient, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 
 import { AWS_REGION, TABLE_NAME } from '../../constants/aws';
-import { updateRequestCount } from './update-request-count';
+import { createMember } from './create-member';
 
 jest.mock('@aws-sdk/client-dynamodb', () => ({
   DynamoDBClient: jest.fn(() => ({
@@ -15,7 +15,7 @@ jest.mock('@aws-sdk/client-dynamodb', () => ({
   UpdateItemCommand: jest.fn(),
 }));
 
-describe('updateRequestCount', () => {
+describe('createMember', () => {
   beforeAll(() => {
     console.error = jest.fn();
   });
@@ -26,7 +26,10 @@ describe('updateRequestCount', () => {
   it('should return updated request count and registered destination', async () => {
     const metadataAccessKey = 'access-key';
 
-    const result = await updateRequestCount({ metadataAccessKey });
+    const result = await createMember({
+      metadataAccessKey,
+      userEmail: 'fakeemail',
+    });
 
     expect(result).toEqual({
       requestCount: 2,
@@ -39,11 +42,9 @@ describe('updateRequestCount', () => {
       Key: {
         accessKey: { S: metadataAccessKey },
       },
-      UpdateExpression:
-        'SET requestCount = if_not_exists(requestCount, :start) + :incrementValue',
+      UpdateExpression: 'SET requestCount = if_not_exists(destination, :start)',
       ExpressionAttributeValues: {
-        ':incrementValue': { N: '1' },
-        ':start': { N: '0' },
+        ':start': { N: 'fakeemail' },
       },
       ReturnValues: 'ALL_NEW',
     });
@@ -57,7 +58,10 @@ describe('updateRequestCount', () => {
       send: jest.fn().mockRejectedValue(new Error('DynamoDB error')),
     }));
 
-    const result = await updateRequestCount({ metadataAccessKey });
+    const result = await createMember({
+      metadataAccessKey,
+      userEmail: 'fakeemail',
+    });
 
     expect(result).toEqual({
       requestCount: 0,
