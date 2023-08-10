@@ -7,7 +7,6 @@ jest.mock('@aws-sdk/client-dynamodb', () => ({
   DynamoDBClient: jest.fn(() => ({
     send: jest.fn().mockResolvedValue({
       Attributes: {
-        requestCount: { N: '2' },
         destination: { S: 'recipient@example.com' },
       },
     }),
@@ -32,7 +31,6 @@ describe('createMember', () => {
     });
 
     expect(result).toEqual({
-      requestCount: 2,
       registeredDestination: 'recipient@example.com',
     });
 
@@ -64,7 +62,6 @@ describe('createMember', () => {
     });
 
     expect(result).toEqual({
-      requestCount: 0,
       registeredDestination: null,
     });
     expect(console.error).toHaveBeenCalledTimes(1);

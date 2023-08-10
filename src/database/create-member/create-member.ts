@@ -4,7 +4,6 @@ import { AWS_REGION, TABLE_NAME } from '../../constants/aws';
 
 type CreateMemberCountArgs = { metadataAccessKey: string; userEmail: string };
 type CreateMemberCountReturn = {
-  requestCount: number;
   registeredDestination: string;
 };
 
@@ -30,13 +29,12 @@ async function createMember({
     const results = await client.send(command);
     console.log('dynamoResponse: ', results);
     const {
-      requestCount: { N: requestCount },
       destination: { S: registeredDestination },
     } = results.Attributes;
-    return { requestCount: parseInt(requestCount, 10), registeredDestination };
+    return { registeredDestination };
   } catch (err) {
     console.error(err);
-    return { requestCount: 0, registeredDestination: null };
+    return { registeredDestination: null };
   }
 }
 
