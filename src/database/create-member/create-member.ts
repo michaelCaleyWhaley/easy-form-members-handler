@@ -19,7 +19,7 @@ async function createMember({
     Key: {
       accessKey: { S: metadataAccessKey },
     },
-    UpdateExpression: 'SET requestCount = if_not_exists(destination, :start)',
+    UpdateExpression: 'SET destination = if_not_exists(destination, :start)',
     ExpressionAttributeValues: {
       ':start': { S: userEmail },
     },
