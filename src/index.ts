@@ -47,9 +47,5 @@ export const handler = async (
     return unauthorisedResponse(controllerResponse);
   }
 
-  const {
-    success: { body },
-  } = controllerResponse as SuccessReturn;
-
-  return authorisedResponse({ body });
+  return authorisedResponse(controllerResponse as SuccessReturn);
 };

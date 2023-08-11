@@ -1,15 +1,13 @@
-type AuthorisedResponseParams = {
-  body: unknown;
-};
+import { SuccessReturn } from '../../controllers/member/member';
 
-function authorisedResponse({ body }: AuthorisedResponseParams) {
+function authorisedResponse(response: SuccessReturn) {
   return {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(response),
   };
 }
 
